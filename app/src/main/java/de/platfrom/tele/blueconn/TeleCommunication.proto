@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+//compile to java use this command : protoc --java_out=./ TeleCommunication.proto
+//compile to python use this command : protoc --python_out=./ TeleCommunication.proto
+//compile to embed c use nanopb:  python generator/nanopb_generator.py TeleCommunication.proto
+//using nanopb for emmbedded
+//
+
+message ControlMessage {
+    int32 speed_x = 1;
+    int32 speed_y = 2;
+    int32 speed_rot = 3;
+    int32 pan = 4;
+    int32 tilt = 5;
+  }
+
+message DistancesMessage {
+    int32 dist1 = 1;
+    int32 dist2 = 2;
+    int32 dist3 = 3;
+    int32 dist4 = 4;
+}
+
+message CollisionMessage {
+    bool collision = 1;
+}
+
+//message StatusMessage for battery stat etc
