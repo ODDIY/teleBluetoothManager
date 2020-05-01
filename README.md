@@ -1,5 +1,5 @@
 
-# Protobuffer conntion to Bluetooth device
+# Protobuffer Connection to Bluetooth device
 
 
 ## Basic
