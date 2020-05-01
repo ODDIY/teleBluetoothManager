@@ -1,4 +1,4 @@
-package de.kai_morich.simple_bluetooth_terminal;
+package de.platfrom.tele.blueconn;
 
 interface SerialListener {
     void onSerialConnect      ();

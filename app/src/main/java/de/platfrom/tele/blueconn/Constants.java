@@ -1,4 +1,6 @@
-package de.kai_morich.simple_bluetooth_terminal;
+package de.platfrom.tele.blueconn;
+
+import de.kai_morich.simple_bluetooth_terminal.BuildConfig;
 
 class Constants {
 
@@ -7,8 +9,8 @@ class Constants {
     static final String NOTIFICATION_CHANNEL = BuildConfig.APPLICATION_ID + ".Channel";
     static final String INTENT_CLASS_MAIN_ACTIVITY = BuildConfig.APPLICATION_ID + ".MainActivity";
 
-    // values have to be unique within each app
     static final int NOTIFY_MANAGER_START_FOREGROUND_SERVICE = 1001;
+
 
     private Constants() {}
 }

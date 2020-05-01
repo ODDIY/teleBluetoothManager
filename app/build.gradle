@@ -1,9 +1,9 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     defaultConfig {
-        targetSdkVersion 28
+        targetSdkVersion 29
         minSdkVersion 18
         vectorDrawables.useSupportLibrary true
 
@@ -21,9 +21,17 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    buildToolsVersion = '29.0.3'
+}
+
+repositories {
+    mavenCentral()
 }
 
 dependencies {
     implementation 'androidx.appcompat:appcompat:1.0.0'
     implementation 'com.google.android.material:material:1.0.0'
+    implementation 'com.google.protobuf:protobuf-java:3.11.0'
+    implementation 'org.jetbrains:annotations:15.0'
+
 }

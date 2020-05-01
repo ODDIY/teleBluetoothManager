@@ -16,6 +16,27 @@
         android:scrollbars="vertical"
         android:textAppearance="@style/TextAppearance.AppCompat.Medium" />
 
+    <EditText
+        android:id="@+id/speedX"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/speedY"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="number" />
+
+    <EditText
+        android:id="@+id/speedRot"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="number" />
+
     <View
         android:layout_width="match_parent"
         android:background="?android:attr/listDivider"
