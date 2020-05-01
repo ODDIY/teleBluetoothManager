@@ -97,15 +97,20 @@ public class TerminalFragment extends Fragment {
         TextView sRot = view.findViewById(R.id.speedRot);
 
         sendBtn.setOnClickListener(v -> {
-            int valX = Integer.parseInt(sX.getText().toString());
-            int valY = Integer.parseInt(sY.getText().toString());
-            int valRot = Integer.parseInt(sRot.getText().toString());
-            TeleCommunication.ControlMessage.Builder builder = TeleCommunication.ControlMessage.newBuilder();
-            builder.setSpeedX(valX);
-            builder.setSpeedY(valY);
-            builder.setSpeedRot(valRot);
-            TeleCommunication.ControlMessage msg = builder.build();
-            conn.sendControlMessage(msg);
+            try {
+                int valX = Integer.parseInt(sX.getText().toString());
+                int valY = Integer.parseInt(sY.getText().toString());
+                int valRot = Integer.parseInt(sRot.getText().toString());
+                TeleCommunication.ControlMessage.Builder builder = TeleCommunication.ControlMessage.newBuilder();
+                builder.setSpeedX(valX);
+                builder.setSpeedY(valY);
+                builder.setSpeedRot(valRot);
+                TeleCommunication.ControlMessage msg = builder.build();
+                conn.sendControlMessage(msg);
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            }
+
         });
         return view;
     }

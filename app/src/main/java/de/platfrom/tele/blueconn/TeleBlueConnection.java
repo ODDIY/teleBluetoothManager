@@ -62,13 +62,12 @@ public class TeleBlueConnection implements SerialListener, ServiceConnection {
     private boolean initialStart = true;
     private boolean connected = false;
     private Context context;
+
     private byte[] inputPackageBuffer = new byte[0];
-
-    public void attachTeleBlueListerner(TeleBlueListerner teleBlueListerner) {
-        this.teleBlueListerner = teleBlueListerner;
-    }
-
     private TeleBlueListerner teleBlueListerner;
+
+
+
 
 
 
@@ -105,6 +104,14 @@ public class TeleBlueConnection implements SerialListener, ServiceConnection {
     }
 
     /**
+     * Attach Message Listener
+     * @param teleBlueListerner Message Listener
+     */
+    public void attachTeleBlueListerner(TeleBlueListerner teleBlueListerner) {
+        this.teleBlueListerner = teleBlueListerner;
+    }
+
+    /**
      * set the device to use
      * @param deviceAdr bluetooth mac address of the device to connect to
      */
@@ -113,6 +120,9 @@ public class TeleBlueConnection implements SerialListener, ServiceConnection {
         Log.d("TBC", deviceAdr);
     }
 
+    /**
+     * Disconnect from bluetooth device
+     */
     private void disconnect() {
         Log.d("TBC", "Disconnect");
         connected = false;
@@ -174,7 +184,15 @@ public class TeleBlueConnection implements SerialListener, ServiceConnection {
 
     /**
      * decode one ore more packages from the input buffer
-     * TODO: what happens with wrong data in the package
+     *
+     * what happens with wrong data in the package?
+     * 0x00 messages are just skipped
+     *
+     * if a packages is corrupted the next incoming package could also be corrupted
+     * because an error gets only detected if a 0x00 byte is received
+     *
+     * 0x00 is always the last byte of a package with cobs encoding
+     *
      * @return list of decoded byte packages
      */
     private List<byte[]> decodeCobsBuffer() {
@@ -210,7 +228,12 @@ public class TeleBlueConnection implements SerialListener, ServiceConnection {
         return  result;
     }
 
-    private void receive(@org.jetbrains.annotations.NotNull byte[] data) {
+    /**
+     * receive serial bluetooth data, check, convert, check, convert and distribute the data
+     * raw -cobs decode-> package -> (type,data) -> Message
+     * @param data raw data received from the bluetooth service
+     */
+    private void receive(byte[] data) {
 
         Log.d("TBC", "receive");
         // -------------------------- collect input package ---------------------------------------
@@ -226,6 +249,7 @@ public class TeleBlueConnection implements SerialListener, ServiceConnection {
         byte[] result = Arrays.copyOf(inputPackageBuffer, inputPackageBuffer.length + data.length);
         System.arraycopy(data, 0, result, inputPackageBuffer.length, data.length);
         inputPackageBuffer = result;
+
 
         //decode Buffer
         List<byte[]> packs = decodeCobsBuffer();
@@ -271,12 +295,22 @@ public class TeleBlueConnection implements SerialListener, ServiceConnection {
         }
     }
 
+    /**
+     * Send a ControlMessage over bluetooth
+     * (Message -> (type, data))
+     * @param msg ControlMessage to send
+     */
     public void sendControlMessage(TeleCommunication.ControlMessage msg) {
         msg.toByteArray();
-        sendPackage(msg.toByteArray());
+        sendPackage((byte) 0x00, msg.toByteArray());
     }
 
     //create send function for the specific object
+
+    /**
+     * TEST only function
+     * @param str
+     */
     public void send(String str) {
         Log.d("TBC", "send" + str);
         //sends a test package
@@ -290,10 +324,13 @@ public class TeleBlueConnection implements SerialListener, ServiceConnection {
         TeleCommunication.ControlMessage msg = builder.build();
 
         msg.toByteArray();
-        sendPackage(msg.toByteArray());
+        sendPackage((byte) 0x01, msg.toByteArray());
 
     }
 
+    /**
+     * establish connection to bluetooth device
+     */
     private void connect() {
         Log.d("TBC", "connect");
 
@@ -311,7 +348,22 @@ public class TeleBlueConnection implements SerialListener, ServiceConnection {
         }
     }
 
-    private void sendPackage(byte[] pack) {
+    /**
+     * sends message data over bluetooth
+     *
+     * 0. create frame
+     * 1. insert given type
+     * 2. insert data
+     * 3. calculate  checksum
+     * 4. insert checksum
+     * 5. COBS encode
+     * 6. add 0x00 to the end
+     * 7. SEND AWAY
+     *
+     * @param type type id of the message data
+     * @param pack data
+     */
+    private void sendPackage(byte type, byte[] pack) {
         if(!connected) {
             //error
             return;
@@ -319,7 +371,7 @@ public class TeleBlueConnection implements SerialListener, ServiceConnection {
 
         byte[] bytes = new byte[pack.length+2];
 
-        bytes[0] = 0x01; //fist byte msg type
+        bytes[0] = type; //fist byte msg type
         System.arraycopy(pack,0, bytes, 1, pack.length); // msg bytes
 
         //calculate checksum and insert checksum

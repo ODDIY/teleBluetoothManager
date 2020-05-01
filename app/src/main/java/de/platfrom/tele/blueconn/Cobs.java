@@ -31,6 +31,7 @@ class Cobs {
         NULL_POINTER,
         OUT_BUFFER_OVERFLOW,
         ZERO_BYTE_IN_INPUT,
+        EMPTY,
         INPUT_TOO_SHORT
     }
 
@@ -159,7 +160,7 @@ class Cobs {
                 if (len_code == 0)
                 {
 
-                    if(src_len < 2) {
+                    if(src_len < 2 || src_ptr_counter == 1) {
                         result.status = DecodeStatus.ZERO_BYTE_IN_INPUT;
                     } else {
                         //at the end 00 is ok
